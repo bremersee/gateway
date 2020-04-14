@@ -1,0 +1,13 @@
+info:
+  app:
+    name: ${spring.application.name}
+    version: 1.0.0
+    description: Spring Cloud Gateway.
+
+eureka:
+  client:
+    enabled: false
+
+server:
+  port: ${SERVER_PORT:8080}
+
