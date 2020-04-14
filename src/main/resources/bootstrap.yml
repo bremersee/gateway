@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ${APPLICATION_NAME:pts}
+    name: ${APPLICATION_NAME:gateway}
   profiles:
     active: ${ACTIVE_PROFILES:default}
   cloud:

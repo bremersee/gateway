@@ -2,7 +2,7 @@ info:
   app:
     name: ${spring.application.name}
     version: 1.0.0
-    description: Spring Cloud Gateway.
+    description: Bremersee's Spring Cloud Gateway.
 
 eureka:
   client:
@@ -31,6 +31,7 @@ spring:
       discovery:
         locator:
           enabled: true
+          lower-case-service-id: true
 #      routes:
 #        - id: pts-route
 #          uri: lb://pts
