@@ -10,6 +10,19 @@ bremersee:
       include-handler: true
       include-path: true
 
+spring:
+  sleuth:
+    enabled: ${SLEUTH_ENABLED:false}
+    sampler:
+      probability: ${SLEUTH_PROBABILITY:1.0}
+  zipkin:
+    enabled: ${ZIPKIN_ENABLED:false}
+    base-url: ${ZIPKIN_BASE_URL:http://localhost:9411/}
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+
 eureka:
   client:
     enabled: false
@@ -29,19 +42,6 @@ management:
 
 server:
   port: ${SERVER_PORT:8080}
-
-spring:
-  sleuth:
-    enabled: ${SLEUTH_ENABLED:false}
-    sampler:
-      probability: ${SLEUTH_PROBABILITY:1.0}
-  zipkin:
-    enabled: ${ZIPKIN_ENABLED:false}
-    base-url: ${ZIPKIN_BASE_URL:http://localhost:9411/}
-  cloud:
-    loadbalancer:
-      ribbon:
-        enabled: false
 
 ---
 
@@ -66,54 +66,3 @@ bremersee:
           - "ROLE_ACTUATOR"
         admin-roles:
           - "ROLE_ACTUATOR_ADMIN"
-
----
-
-spring:
-  profiles: swarm
-
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-#      routes:
-#        - id: pts-route
-#          uri: lb://pts
-#          predicates:
-#            - Path=/pts/**
-#          filters:
-#            - RewritePath=/pts/(?.*), /$\{path}
-
-eureka:
-  instance:
-    prefer-ip-address: true
-    hostname: ${HOST_NAME:localhost}
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-    non-secure-port: ${server.port:80}
-
-  client:
-    enabled: true
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: "http://eureka1:8761/eureka/,http://eureka2:8762/eureka/,http://eureka3:8763/eureka/"
-
----
-
-spring:
-  profiles: dev
-  cloud:
-    inetutils:
-      preferred-networks:
-        - 10.0.7
-
----
-
-spring:
-  profiles: prod
-  cloud:
-    inetutils:
-      preferred-networks:
-        - 172.16.1
