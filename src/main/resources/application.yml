@@ -22,6 +22,11 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
 
 eureka:
   client:
