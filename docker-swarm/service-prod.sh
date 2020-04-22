@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 docker service create \
-  --replicas $3 \
+  --replicas 2 \
   --name gateway \
   --network proxy \
   --publish 80:80 \
@@ -13,7 +13,7 @@ docker service create \
   --update-delay 10s \
   --constraint 'node.role == manager' \
   -e APPLICATION_NAME='gateway' \
-  -e ACTIVE_PROFILES=$2 \
+  -e ACTIVE_PROFILES='swarm,prod' \
   -e CONFIG_CLIENT_ENABLED='true' \
   -e CONFIG_URI='http://config-server' \
   -e CONFIG_USER_FILE='/run/secrets/config-server-client-user' \
@@ -25,4 +25,4 @@ docker service create \
   -e CONFIG_RETRY_MULTIPLIER='1.1' \
   -e ACCESS_LOG_ENABLED='false' \
   -e SERVER_PORT='80' \
-  $1
+  bremersee/gateway:latest
