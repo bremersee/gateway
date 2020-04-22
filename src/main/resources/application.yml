@@ -1,0 +1,73 @@
+bremersee:
+  exception-mapping:
+    api-paths:
+      - /*/api/**
+    default-exception-mapping-config:
+      include-stack-trace: true
+      include-cause: true
+      include-application-name: true
+      include-exception-class-name: true
+      include-handler: true
+      include-path: true
+
+spring:
+  sleuth:
+    enabled: ${SLEUTH_ENABLED:false}
+    sampler:
+      probability: ${SLEUTH_PROBABILITY:1.0}
+  zipkin:
+    enabled: ${ZIPKIN_ENABLED:false}
+    base-url: ${ZIPKIN_BASE_URL:http://localhost:9411/}
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+
+eureka:
+  client:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      cors:
+        allowed-headers: "*"
+        allowed-methods: "*"
+        allowed-origins: "*"
+  endpoint:
+    health:
+      show-details: always
+
+server:
+  port: ${SERVER_PORT:8080}
+
+---
+
+spring:
+  profiles: basic-auth
+
+bremersee:
+  security:
+    authentication:
+      enable-jwt-support: false
+      basic-auth-users:
+        - name: "actuator"
+          password: "actuator"
+          authorities:
+            - "ROLE_ACTUATOR"
+        - name: "admin"
+          password: "admin"
+          authorities:
+            - "ROLE_ACTUATOR_ADMIN"
+      actuator:
+        roles:
+          - "ROLE_ACTUATOR"
+        admin-roles:
+          - "ROLE_ACTUATOR_ADMIN"
