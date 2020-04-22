@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gateway</a> &gt; <a href="index.source.html" class="el_package">org.bremersee.gateway.config</a> &gt; <span class="el_source">SecurityConfiguration.java</span></div><h1>SecurityConfiguration.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bremersee.gateway.config;
+
+import org.bremersee.security.authentication.AuthenticationProperties;
+import org.bremersee.security.authentication.PasswordFlowReactiveAuthenticationManager;
+import org.bremersee.security.authentication.RoleBasedAuthorizationManager;
+import org.bremersee.security.authentication.RoleOrIpBasedAuthorizationManager;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.util.matcher.AndServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
+import org.springframework.util.Assert;
+
+/**
+ * The security configuration.
+ *
+ * @author Christian Bremer
+ */
+@Configuration
+@EnableWebFluxSecurity
+<span class="fc" id="L47">public class SecurityConfiguration {</span>
+
+  /**
+   * The in-memory security configuration.
+   */
+  @ConditionalOnProperty(
+      prefix = &quot;bremersee.security.authentication&quot;,
+      name = &quot;enable-jwt-support&quot;,
+      havingValue = &quot;false&quot;, matchIfMissing = true)
+  @Configuration
+  @EnableConfigurationProperties(AuthenticationProperties.class)
+  static class InMemory {
+
+    private AuthenticationProperties properties;
+
+    /**
+     * Instantiates a new in-memory security configuration.
+     *
+     * @param properties the properties
+     */
+<span class="fc" id="L67">    public InMemory(AuthenticationProperties properties) {</span>
+<span class="fc" id="L68">      this.properties = properties;</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * User details service.
+     *
+     * @return the user details service
+     */
+    @Bean
+    public MapReactiveUserDetailsService userDetailsService() {
+<span class="fc" id="L78">      return new MapReactiveUserDetailsService(properties.buildBasicAuthUserDetails());</span>
+    }
+
+    /**
+     * The security filter chain.
+     *
+     * @param http the http
+     * @return the security web filter chain
+     */
+    @Bean
+    public SecurityWebFilterChain inMemoryFilterChain(ServerHttpSecurity http) {
+      //noinspection DuplicatedCode
+<span class="fc" id="L90">      return http</span>
+<span class="fc" id="L91">          .authorizeExchange()</span>
+<span class="fc" id="L92">          .pathMatchers(HttpMethod.OPTIONS).permitAll()</span>
+<span class="fc" id="L93">          .matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()</span>
+<span class="fc" id="L94">          .matchers(EndpointRequest.to(InfoEndpoint.class)).permitAll()</span>
+<span class="fc" id="L95">          .matchers(new AndServerWebExchangeMatcher(</span>
+<span class="fc" id="L96">              EndpointRequest.toAnyEndpoint(),</span>
+<span class="fc" id="L97">              ServerWebExchangeMatchers.pathMatchers(HttpMethod.GET, &quot;/**&quot;)))</span>
+<span class="fc" id="L98">          .access(new RoleOrIpBasedAuthorizationManager(</span>
+<span class="fc" id="L99">              properties.getActuator().getRoles(),</span>
+<span class="fc" id="L100">              properties.getRolePrefix(),</span>
+<span class="fc" id="L101">              properties.getActuator().getIpAddresses()))</span>
+<span class="fc" id="L102">          .matchers(EndpointRequest.toAnyEndpoint())</span>
+<span class="fc" id="L103">          .access(new RoleBasedAuthorizationManager(</span>
+<span class="fc" id="L104">              properties.getActuator().getAdminRoles(),</span>
+<span class="fc" id="L105">              properties.getRolePrefix()))</span>
+<span class="fc" id="L106">          .anyExchange().permitAll()</span>
+<span class="fc" id="L107">          .and()</span>
+<span class="fc" id="L108">          .httpBasic()</span>
+<span class="fc" id="L109">          .and()</span>
+<span class="fc" id="L110">          .formLogin().disable()</span>
+<span class="fc" id="L111">          .csrf().disable()</span>
+<span class="fc" id="L112">          .cors().disable()</span>
+<span class="fc" id="L113">          .build();</span>
+    }
+  }
+
+  /**
+   * The security configuration with password flow and OpenID provider.
+   */
+  @ConditionalOnProperty(
+      prefix = &quot;bremersee.security.authentication&quot;,
+      name = &quot;enable-jwt-support&quot;,
+      havingValue = &quot;true&quot;)
+  @Configuration
+  @EnableConfigurationProperties(AuthenticationProperties.class)
+  static class PasswordFlow {
+
+    private AuthenticationProperties properties;
+
+    private PasswordFlowReactiveAuthenticationManager passwordFlowAuthenticationManager;
+
+    /**
+     * Instantiates a new security configuration with password flow.
+     *
+     * @param properties the properties
+     * @param authenticationManagerProvider the authentication manager provider
+     */
+    public PasswordFlow(AuthenticationProperties properties,
+<span class="nc" id="L139">        ObjectProvider&lt;PasswordFlowReactiveAuthenticationManager&gt; authenticationManagerProvider) {</span>
+<span class="nc" id="L140">      this.properties = properties;</span>
+<span class="nc" id="L141">      this.passwordFlowAuthenticationManager = authenticationManagerProvider.getIfAvailable();</span>
+<span class="nc" id="L142">      Assert.notNull(passwordFlowAuthenticationManager,</span>
+          &quot;Password flow authentication manager must be present.&quot;);
+<span class="nc" id="L144">    }</span>
+
+    /**
+     * The security filter chain.
+     *
+     * @param http the http
+     * @return the security web filter chain
+     */
+    @Bean
+    public SecurityWebFilterChain passwordFlowFilterChain(ServerHttpSecurity http) {
+      //noinspection DuplicatedCode
+<span class="nc" id="L155">      return http</span>
+<span class="nc" id="L156">          .authorizeExchange()</span>
+<span class="nc" id="L157">          .pathMatchers(HttpMethod.OPTIONS).permitAll()</span>
+<span class="nc" id="L158">          .matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()</span>
+<span class="nc" id="L159">          .matchers(EndpointRequest.to(InfoEndpoint.class)).permitAll()</span>
+<span class="nc" id="L160">          .matchers(new AndServerWebExchangeMatcher(</span>
+<span class="nc" id="L161">              EndpointRequest.toAnyEndpoint(),</span>
+<span class="nc" id="L162">              ServerWebExchangeMatchers.pathMatchers(HttpMethod.GET, &quot;/**&quot;)))</span>
+<span class="nc" id="L163">          .access(new RoleOrIpBasedAuthorizationManager(</span>
+<span class="nc" id="L164">              properties.getActuator().getRoles(),</span>
+<span class="nc" id="L165">              properties.getRolePrefix(),</span>
+<span class="nc" id="L166">              properties.getActuator().getIpAddresses()))</span>
+<span class="nc" id="L167">          .matchers(EndpointRequest.toAnyEndpoint())</span>
+<span class="nc" id="L168">          .access(new RoleBasedAuthorizationManager(</span>
+<span class="nc" id="L169">              properties.getActuator().getAdminRoles(),</span>
+<span class="nc" id="L170">              properties.getRolePrefix()))</span>
+<span class="nc" id="L171">          .anyExchange().permitAll()</span>
+<span class="nc" id="L172">          .and()</span>
+<span class="nc" id="L173">          .httpBasic()</span>
+<span class="nc" id="L174">          .authenticationManager(passwordFlowAuthenticationManager)</span>
+<span class="nc" id="L175">          .and()</span>
+<span class="nc" id="L176">          .formLogin().disable()</span>
+<span class="nc" id="L177">          .csrf().disable()</span>
+<span class="nc" id="L178">          .cors().disable()</span>
+<span class="nc" id="L179">          .build();</span>
+    }
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
