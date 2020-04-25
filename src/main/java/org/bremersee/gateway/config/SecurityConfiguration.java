@@ -163,7 +163,9 @@ public class SecurityConfiguration {
     public SecurityWebFilterChain gatewayFilterChain(ServerHttpSecurity http) {
       return http
           .securityMatcher(new NegatedServerWebExchangeMatcher(EndpointRequest.toAnyEndpoint()))
-          .authorizeExchange().anyExchange().permitAll()
+          .authorizeExchange()
+          .pathMatchers(HttpMethod.OPTIONS).permitAll()
+          .anyExchange().permitAll()
           .and()
           .httpBasic().disable()
           .csrf().disable()
