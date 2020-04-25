@@ -167,7 +167,6 @@ public class SecurityConfiguration {
           .and()
           .httpBasic().disable()
           .csrf().disable()
-          .cors().disable()
           .build();
     }
 
