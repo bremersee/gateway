@@ -28,12 +28,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.AndServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.util.Assert;
 
@@ -85,7 +87,8 @@ public class SecurityConfiguration {
      * @return the security web filter chain
      */
     @Bean
-    public SecurityWebFilterChain inMemoryFilterChain(ServerHttpSecurity http) {
+    @Order(52)
+    public SecurityWebFilterChain actuatorFilterChain(ServerHttpSecurity http) {
       //noinspection DuplicatedCode
       return http
           .securityMatcher(EndpointRequest.toAnyEndpoint())
@@ -143,6 +146,17 @@ public class SecurityConfiguration {
           "Password flow authentication manager must be present.");
     }
 
+    @Bean
+    @Order(51)
+    public SecurityWebFilterChain gatewayFilterChain(ServerHttpSecurity http) {
+      return http
+          .securityMatcher(new NegatedServerWebExchangeMatcher(EndpointRequest.toAnyEndpoint()))
+          //.authorizeExchange().anyExchange().permitAll()
+          //.and()
+          .csrf().disable()
+          .build();
+    }
+
     /**
      * The security filter chain.
      *
@@ -150,7 +164,8 @@ public class SecurityConfiguration {
      * @return the security web filter chain
      */
     @Bean
-    public SecurityWebFilterChain passwordFlowFilterChain(ServerHttpSecurity http) {
+    @Order(52)
+    public SecurityWebFilterChain actuatorFilterChain(ServerHttpSecurity http) {
       //noinspection DuplicatedCode
       return http
           .securityMatcher(EndpointRequest.toAnyEndpoint())
