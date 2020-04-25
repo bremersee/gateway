@@ -27,6 +27,13 @@ spring:
         locator:
           enabled: false
           lower-case-service-id: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+            allow-credentials: true
 
 eureka:
   client:
@@ -41,6 +48,7 @@ management:
         allowed-headers: "*"
         allowed-methods: "*"
         allowed-origins: "*"
+        allow-credentials: true
   endpoint:
     health:
       show-details: always

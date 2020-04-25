@@ -88,6 +88,7 @@ public class SecurityConfiguration {
     public SecurityWebFilterChain inMemoryFilterChain(ServerHttpSecurity http) {
       //noinspection DuplicatedCode
       return http
+          .securityMatcher(EndpointRequest.toAnyEndpoint())
           .authorizeExchange()
           .pathMatchers(HttpMethod.OPTIONS).permitAll()
           .matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
@@ -103,13 +104,12 @@ public class SecurityConfiguration {
           .access(new RoleBasedAuthorizationManager(
               properties.getActuator().getAdminRoles(),
               properties.getRolePrefix()))
-          .anyExchange().permitAll()
+          .anyExchange().denyAll()
           .and()
           .httpBasic()
           .and()
           .formLogin().disable()
           .csrf().disable()
-          .cors().disable()
           .build();
     }
   }
@@ -153,6 +153,7 @@ public class SecurityConfiguration {
     public SecurityWebFilterChain passwordFlowFilterChain(ServerHttpSecurity http) {
       //noinspection DuplicatedCode
       return http
+          .securityMatcher(EndpointRequest.toAnyEndpoint())
           .authorizeExchange()
           .pathMatchers(HttpMethod.OPTIONS).permitAll()
           .matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
@@ -168,14 +169,13 @@ public class SecurityConfiguration {
           .access(new RoleBasedAuthorizationManager(
               properties.getActuator().getAdminRoles(),
               properties.getRolePrefix()))
-          .anyExchange().permitAll()
+          .anyExchange().denyAll()
           .and()
           .httpBasic()
           .authenticationManager(passwordFlowAuthenticationManager)
           .and()
           .formLogin().disable()
           .csrf().disable()
-          .cors().disable()
           .build();
     }
   }
