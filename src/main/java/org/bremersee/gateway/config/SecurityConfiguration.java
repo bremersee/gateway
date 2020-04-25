@@ -80,6 +80,18 @@ public class SecurityConfiguration {
       return new MapReactiveUserDetailsService(properties.buildBasicAuthUserDetails());
     }
 
+    @Bean
+    @Order(51)
+    public SecurityWebFilterChain gatewayFilterChain(ServerHttpSecurity http) {
+      return http
+          .securityMatcher(new NegatedServerWebExchangeMatcher(EndpointRequest.toAnyEndpoint()))
+          .authorizeExchange().anyExchange().permitAll()
+          .and()
+          .httpBasic().disable()
+          .csrf().disable()
+          .build();
+    }
+
     /**
      * The security filter chain.
      *
@@ -155,6 +167,7 @@ public class SecurityConfiguration {
           .and()
           .httpBasic().disable()
           .csrf().disable()
+          .cors().disable()
           .build();
     }
 
