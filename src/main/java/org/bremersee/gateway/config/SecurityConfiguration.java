@@ -151,8 +151,8 @@ public class SecurityConfiguration {
     public SecurityWebFilterChain gatewayFilterChain(ServerHttpSecurity http) {
       return http
           .securityMatcher(new NegatedServerWebExchangeMatcher(EndpointRequest.toAnyEndpoint()))
-          //.authorizeExchange().anyExchange().permitAll()
-          //.and()
+          .authorizeExchange().anyExchange().permitAll()
+          .and()
           .csrf().disable()
           .build();
     }
