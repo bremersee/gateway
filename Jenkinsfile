@@ -9,7 +9,7 @@ pipeline {
     PUSH_RELEASE=true
     DEPLOY_SNAPSHOT=true
     DEPLOY_RELEASE=true
-    SNAPSHOT_SITE=true
+    SNAPSHOT_SITE=false
     RELEASE_SITE=true
   }
   stages {
