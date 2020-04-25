@@ -153,6 +153,7 @@ public class SecurityConfiguration {
           .securityMatcher(new NegatedServerWebExchangeMatcher(EndpointRequest.toAnyEndpoint()))
           .authorizeExchange().anyExchange().permitAll()
           .and()
+          .httpBasic().disable()
           .csrf().disable()
           .build();
     }
