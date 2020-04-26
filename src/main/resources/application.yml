@@ -27,13 +27,13 @@ spring:
         locator:
           enabled: false
           lower-case-service-id: true
-      globalcors:
+#      globalcors:
 #        add-to-simple-url-handler-mapping: true
-        cors-configurations:
-          '[/**]':
-            allowed-origins: "*"
-            allowed-methods: "*"
-            allowed-headers: "*"
+#        cors-configurations:
+#          '[/**]':
+#            allowed-origins: "*"
+#            allowed-methods: "*"
+#            allowed-headers: "*"
 #            allow-credentials: true
 
 eureka:
