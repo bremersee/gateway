@@ -68,7 +68,9 @@ spring:
         - id: test
           uri: http://dev-swarm:8111
           predicates:
-            - Path=/test
+            - Path=/test/**
+          filters:
+            - RewritePath=/test/(?.*), /$\{path}
 
 bremersee:
   security:
