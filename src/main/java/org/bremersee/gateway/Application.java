@@ -31,11 +31,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(exclude = {
     BaseCommonConvertersAutoConfiguration.class,
     ModelMapperAutoConfiguration.class,
-    MessageSourceAutoConfiguration.class,
+    MessageSourceAutoConfiguration.class
     // RestApiExceptionMapperAutoConfiguration.class,
     // RestApiExceptionParserAutoConfiguration.class,
     // ApiExceptionHandlerAutoConfiguration.class,
-    CorsAutoConfiguration.class
+    // CorsAutoConfiguration.class
 })
 public class Application {
 
