@@ -14,7 +14,7 @@ bremersee:
       enable: auto
       enable-cors: true
   cors:
-    enable: true
+    enable: false
     allow-all: true
   auth:
     resource-server: none
