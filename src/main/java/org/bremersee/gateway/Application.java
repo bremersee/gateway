@@ -31,10 +31,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     BaseCommonConvertersAutoConfiguration.class,
     ModelMapperAutoConfiguration.class,
     MessageSourceAutoConfiguration.class
-    // RestApiExceptionMapperAutoConfiguration.class,
-    // RestApiExceptionParserAutoConfiguration.class,
-    // ApiExceptionHandlerAutoConfiguration.class,
-    // CorsAutoConfiguration.class
 })
 public class Application {
 
