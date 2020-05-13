@@ -1,16 +1,16 @@
 pipeline {
   agent none
   environment {
-    SERVICE_NAME='gateway'
-    DOCKER_IMAGE='bremersee/gateway'
-    DEV_TAG='snapshot'
-    PROD_TAG='latest'
-    PUSH_SNAPSHOT=true
-    PUSH_RELEASE=true
-    DEPLOY_SNAPSHOT=true
-    DEPLOY_RELEASE=true
-    SNAPSHOT_SITE=false
-    RELEASE_SITE=true
+    SERVICE_NAME = 'gateway'
+    DOCKER_IMAGE = 'bremersee/gateway'
+    DEV_TAG = 'snapshot'
+    PROD_TAG = 'latest'
+    PUSH_SNAPSHOT = true
+    PUSH_RELEASE = true
+    DEPLOY_SNAPSHOT = true
+    DEPLOY_RELEASE = true
+    SNAPSHOT_SITE = true
+    RELEASE_SITE = true
   }
   stages {
     stage('Test') {

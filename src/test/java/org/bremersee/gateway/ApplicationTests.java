@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
     "bremersee.security.authentication.enable-jwt-support=false"
 })
-@ActiveProfiles({"basic-auth"})
+@ActiveProfiles({"in-memory"})
 @TestInstance(Lifecycle.PER_CLASS)
 class ApplicationTests {
 

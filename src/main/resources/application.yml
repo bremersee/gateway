@@ -9,6 +9,15 @@ bremersee:
       include-exception-class-name: true
       include-handler: true
       include-path: true
+  actuator:
+    auth:
+      enable: auto
+      enable-cors: true
+  cors:
+    enable: true
+    allow-all: true
+  auth:
+    resource-server: none
 
 spring:
   sleuth:
@@ -27,13 +36,6 @@ spring:
         locator:
           enabled: false
           lower-case-service-id: true
-#      globalcors:
-#        cors-configurations:
-#          '[/**]':
-#            allowed-origins: "*"
-#            allowed-methods: "*"
-#            allowed-headers: "*"
-#            allow-credentials: true
 
 eureka:
   client:
@@ -44,48 +46,45 @@ management:
     web:
       exposure:
         include: "*"
-#      cors:
-#        allowed-headers: "*"
-#        allowed-methods: "*"
-#        allowed-origins: "*"
-        # allow-credentials: true
+      cors:
+        allowed-headers: "*"
+        allowed-methods: "*"
+        allowed-origins: "*"
+        allow-credentials: true
   endpoint:
     health:
-      show-details: always
+      show-details: when_authorized
+
 
 server:
   port: ${SERVER_PORT:8080}
 
+logging:
+  level:
+    ROOT: info
+    com.netflix.eureka.registry: warn
+    com.netflix.discovery.shared.resolver: warn
+    org.springframework.cloud.configclient: warn
+
 ---
 
 spring:
-  profiles: basic-auth
-
-  cloud:
-    gateway:
-      routes:
-        - id: test
-          uri: http://dev-swarm:8111
-          predicates:
-            - Path=/test/**
-          filters:
-            - RewritePath=/test/(?.*), /$\{path}
+  profiles: in-memory
 
 bremersee:
-  security:
-    authentication:
-      enable-jwt-support: false
-      basic-auth-users:
-        - name: "actuator"
-          password: "actuator"
-          authorities:
-            - "ROLE_ACTUATOR"
-        - name: "admin"
-          password: "admin"
-          authorities:
-            - "ROLE_ACTUATOR_ADMIN"
-      actuator:
-        roles:
+  auth:
+    in-memory-users:
+      - name: "admin"
+        password: "admin"
+        authorities:
+          - "ROLE_USER"
+          - "ROLE_ADMIN"
+      - name: "actuator"
+        password: "actuator"
+        authorities:
           - "ROLE_ACTUATOR"
-        admin-roles:
           - "ROLE_ACTUATOR_ADMIN"
+      - name: "user"
+        password: "user"
+        authorities:
+          - "ROLE_USER"
