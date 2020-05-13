@@ -5,7 +5,7 @@ pipeline {
     DOCKER_IMAGE = 'bremersee/gateway'
     DEV_TAG = 'snapshot'
     PROD_TAG = 'latest'
-    PUSH_SNAPSHOT = true
+    PUSH_SNAPSHOT = false
     PUSH_RELEASE = true
     DEPLOY_SNAPSHOT = true
     DEPLOY_RELEASE = true
