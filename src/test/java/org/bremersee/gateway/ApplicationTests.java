@@ -16,103 +16,98 @@
 
 package org.bremersee.gateway;
 
-import static org.bremersee.security.core.AuthorityConstants.ACTUATOR_ROLE_NAME;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.function.Consumer;
-import org.junit.jupiter.api.BeforeAll;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.util.StringUtils;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.test.StepVerifier;
 
 /**
  * The application tests.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-    "bremersee.security.authentication.enable-jwt-support=false"
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"in-memory"})
 @TestInstance(Lifecycle.PER_CLASS)
 class ApplicationTests {
 
-	/**
-	 * The application context.
-	 */
-	@Autowired
-  ApplicationContext context;
+  /**
+   * The local server port.
+   */
+  @LocalServerPort
+  int port;
 
-	/**
-	 * The web test client.
-	 */
-	@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-  @Autowired
-  WebTestClient webTestClient;
+  /**
+   * Base url of the local server.
+   *
+   * @return the base url of the local server
+   */
+  String baseUrl() {
+    return "http://localhost:" + port;
+  }
 
-	/**
-	 * Sets up.
-	 */
-	@BeforeAll
-  void setUp() {
-    // https://docs.spring.io/spring-security/site/docs/current/reference/html/test-webflux.html
-    WebTestClient
-        .bindToApplicationContext(this.context)
-        .configureClient()
+  /**
+   * Creates a new web client, that uses the real security configuration.
+   *
+   * @return the web client
+   */
+  WebClient newWebClient() {
+    return WebClient.builder()
+        .baseUrl(baseUrl())
         .build();
   }
 
-	/**
-	 * Fetch health.
-	 */
-	@Test
+  /**
+   * Fetch health.
+   */
+  @Test
   void fetchHealth() {
-    webTestClient
+    StepVerifier.create(newWebClient()
         .get()
         .uri("/actuator/health")
         .accept(MediaType.ALL)
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody(String.class)
-        .value((Consumer<String>) content -> assertTrue(StringUtils.hasText(content)));
+        .exchange())
+        .assertNext(clientResponse -> assertEquals(HttpStatus.OK, clientResponse.statusCode()))
+        .verifyComplete();
   }
 
-	/**
-	 * Fetch metrics.
-	 */
-	@WithMockUser(
-      username = "actuator",
-      password = "actuator",
-      authorities = {ACTUATOR_ROLE_NAME})
+  /**
+   * Fetch metrics.
+   */
   @Test
   void fetchMetrics() {
-    webTestClient
+    StepVerifier.create(newWebClient()
         .get()
         .uri("/actuator/metrics")
+        .headers(httpHeaders -> httpHeaders
+            .setBasicAuth("actuator", "actuator", StandardCharsets.UTF_8))
         .accept(MediaType.ALL)
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody(String.class)
-        .value((Consumer<String>) content -> assertTrue(StringUtils.hasText(content)));
+        .exchange())
+        .assertNext(clientResponse -> assertEquals(HttpStatus.OK, clientResponse.statusCode()))
+        .verifyComplete();
   }
 
-	/**
-	 * Fetch metrics and expect unauthorized.
-	 */
-	@Test
+  /**
+   * Fetch metrics and expect unauthorized.
+   */
+  @Test
   void fetchMetricsAndExpectUnauthorized() {
-    webTestClient
+    StepVerifier.create(newWebClient()
         .get()
         .uri("/actuator/metrics")
         .accept(MediaType.ALL)
-        .exchange()
-        .expectStatus().isUnauthorized();
+        .exchange())
+        .assertNext(clientResponse -> assertEquals(
+            HttpStatus.UNAUTHORIZED,
+            clientResponse.statusCode()))
+        .verifyComplete();
   }
 
 }
