@@ -19,7 +19,6 @@ package org.bremersee.gateway;
 import org.bremersee.context.MessageSourceAutoConfiguration;
 import org.bremersee.converter.ModelMapperAutoConfiguration;
 import org.bremersee.web.reactive.BaseCommonConvertersAutoConfiguration;
-import org.bremersee.web.reactive.CorsAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -31,11 +30,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(exclude = {
     BaseCommonConvertersAutoConfiguration.class,
     ModelMapperAutoConfiguration.class,
-    MessageSourceAutoConfiguration.class,
-    // RestApiExceptionMapperAutoConfiguration.class,
-    // RestApiExceptionParserAutoConfiguration.class,
-    // ApiExceptionHandlerAutoConfiguration.class,
-    CorsAutoConfiguration.class
+    MessageSourceAutoConfiguration.class
 })
 public class Application {
 
