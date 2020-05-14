@@ -25,9 +25,9 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2020 bremersee.org</copyright>
     <item>
-      <title>File: 3,
+      <title>File: 2,
              Errors: 0,
-             Warnings: 35,
+             Warnings: 0,
              Infos: 0
       </title>
             <link>https://github.com/bremersee/common-parent/common-service-parent/gateway/checkstyle.html</link>
@@ -44,20 +44,6 @@ under the License.
             </tr>
           </thead>
           <tbody>
-                          <tr>
-                <td>
-                  <a href="https://github.com/bremersee/common-parent/common-service-parent/gateway/checkstyle.html#org.bremersee.gateway.config.SecurityConfiguration.java">org/bremersee/gateway/config/SecurityConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
                           <tr>
                 <td>
                   <a href="https://github.com/bremersee/common-parent/common-service-parent/gateway/checkstyle.html#org.bremersee.gateway.Application.java">org/bremersee/gateway/Application.java</a>
@@ -80,7 +66,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  35
+                  0
                 </td>
                 <td>
                   0

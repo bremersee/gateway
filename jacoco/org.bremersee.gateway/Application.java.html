@@ -19,7 +19,6 @@ package org.bremersee.gateway;
 import org.bremersee.context.MessageSourceAutoConfiguration;
 import org.bremersee.converter.ModelMapperAutoConfiguration;
 import org.bremersee.web.reactive.BaseCommonConvertersAutoConfiguration;
-import org.bremersee.web.reactive.CorsAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -31,13 +30,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(exclude = {
     BaseCommonConvertersAutoConfiguration.class,
     ModelMapperAutoConfiguration.class,
-    MessageSourceAutoConfiguration.class,
-    // RestApiExceptionMapperAutoConfiguration.class,
-    // RestApiExceptionParserAutoConfiguration.class,
-    // ApiExceptionHandlerAutoConfiguration.class,
-    CorsAutoConfiguration.class
+    MessageSourceAutoConfiguration.class
 })
-<span class="fc" id="L40">public class Application {</span>
+<span class="fc" id="L35">public class Application {</span>
 
   /**
    * The entry point of application.
@@ -45,8 +40,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
    * @param args the input arguments
    */
   public static void main(String[] args) {
-<span class="nc" id="L48">    SpringApplication.run(Application.class, args);</span>
-<span class="nc" id="L49">  }</span>
+<span class="nc" id="L43">    SpringApplication.run(Application.class, args);</span>
+<span class="nc" id="L44">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
