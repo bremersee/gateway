@@ -21,7 +21,7 @@
 
 		<start-class>org.bremersee.gateway.Application</start-class>
 
-		<common-base.version>2.1.0-SNAPSHOT</common-base.version>
+		<common-base.version>2.1.2</common-base.version>
 	</properties>
 
 	<scm>
