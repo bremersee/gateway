@@ -17,6 +17,8 @@ bremersee:
     enable: false
   auth:
     resource-server: none
+  redis:
+    embedded: true
 
 spring:
   sleuth:
