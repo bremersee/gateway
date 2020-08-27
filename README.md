@@ -13,4 +13,4 @@ This gateway is more or less a plain Spring Cloud Gateway:
 
 - [Release](https://bremersee.github.io/gateway/index.html)
 
-- [Snapshot](https://nexus.bremersee.org/repository/maven-sites/gateway/1.0.3-SNAPSHOT/index.html)
+- [Snapshot](https://nexus.bremersee.org/repository/maven-sites/gateway/1.0.4-SNAPSHOT/index.html)
