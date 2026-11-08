@@ -18,7 +18,6 @@ package org.bremersee.gateway.config;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bremersee.spring.boot.autoconfigure.security.authentication.AuthenticationProperties;
 import org.bremersee.spring.security.ldaptive.authentication.ReactiveLdaptiveAuthenticationManager;
 import org.springframework.beans.factory.ObjectProvider;
@@ -28,23 +27,17 @@ import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.security.autoconfigure.actuate.web.reactive.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity.CsrfSpec;
 import org.springframework.security.config.web.server.ServerHttpSecurity.FormLoginSpec;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
-import org.springframework.security.oauth2.server.resource.web.server.BearerTokenServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.header.XFrameOptionsServerHttpHeadersWriter.Mode;
 import org.springframework.security.web.server.util.matcher.AndServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
-import org.springframework.util.Assert;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 
 /**
@@ -54,18 +47,14 @@ import org.springframework.web.cors.reactive.CorsConfigurationSource;
  */
 @EnableWebFluxSecurity
 @EnableConfigurationProperties({
-    AuthenticationProperties.class //OAuth2ResourceServerProperties.class
+    AuthenticationProperties.class
 })
 @Configuration
 class WebSecurityConfiguration {
 
   private final AuthenticationProperties authenticationProperties;
 
-  //private final OAuth2ResourceServerProperties resourceServerProperties;
-
   private final CorsConfigurationSource corsConfigurationSource;
-
-  //private final Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter;
 
   private final ReactiveLdaptiveAuthenticationManager ldaptiveAuthenticationManager;
 
@@ -79,16 +68,12 @@ class WebSecurityConfiguration {
    */
   WebSecurityConfiguration(
       AuthenticationProperties authenticationProperties,
-      //OAuth2ResourceServerProperties resourceServerProperties,
       CorsConfigurationSource corsConfigurationSource,
-      //Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter,
       ObjectProvider<ReactiveLdaptiveAuthenticationManager> ldaptiveAuthenticationManager,
       ObjectProvider<ReactiveUserDetailsService> userDetailsService) {
 
     this.authenticationProperties = authenticationProperties;
-    //this.resourceServerProperties = resourceServerProperties;
     this.corsConfigurationSource = corsConfigurationSource;
-    //this.jwtAuthenticationConverter = jwtAuthenticationConverter;
     this.ldaptiveAuthenticationManager = ldaptiveAuthenticationManager.getIfAvailable();
     this.userDetailsService = userDetailsService.getIfAvailable();
   }
@@ -124,9 +109,6 @@ class WebSecurityConfiguration {
             .hasAnyAuthority(actuatorWriteRoles)
 
             /*
-            .pathMatchers("/api/**")
-            .authenticated()
-
             .pathMatchers("/v3/**").permitAll()
             .pathMatchers("/webjars/**").permitAll()
             .pathMatchers("/swagger-ui/**").permitAll()
@@ -145,17 +127,7 @@ class WebSecurityConfiguration {
         .headers(headerSpec -> headerSpec
             .frameOptions(fos -> fos.mode(Mode.SAMEORIGIN)))
 
-        .formLogin(FormLoginSpec::disable)
-
-        /*
-        .oauth2ResourceServer(customizer -> customizer
-            .authenticationEntryPoint(new BearerTokenServerAuthenticationEntryPoint())
-            .jwt(jwtCustomizer -> jwtCustomizer
-                .jwtAuthenticationConverter(new ReactiveJwtAuthenticationConverterAdapter(
-                    jwtAuthenticationConverter))
-                .jwkSetUri(resourceServerProperties.getJwt().getJwkSetUri())))
-         */
-    ;
+        .formLogin(FormLoginSpec::disable);
 
     if (!isEmpty(ldaptiveAuthenticationManager)) {
       http.httpBasic(customizer -> customizer
