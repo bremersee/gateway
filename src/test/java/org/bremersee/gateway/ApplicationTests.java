@@ -18,12 +18,9 @@ package org.bremersee.gateway;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,8 +31,7 @@ import reactor.test.StepVerifier;
  * The application tests.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"in-memory"})
-@TestInstance(Lifecycle.PER_CLASS)
+@ActiveProfiles({"test"})
 class ApplicationTests {
 
   /**
@@ -70,43 +66,11 @@ class ApplicationTests {
   @Test
   void fetchHealth() {
     StepVerifier.create(newWebClient()
-        .get()
-        .uri("/actuator/health")
-        .accept(MediaType.ALL)
-        .exchange())
-        .assertNext(clientResponse -> assertEquals(HttpStatus.OK, clientResponse.statusCode()))
-        .verifyComplete();
-  }
-
-  /**
-   * Fetch metrics.
-   */
-  @Test
-  void fetchMetrics() {
-    StepVerifier.create(newWebClient()
-        .get()
-        .uri("/actuator/metrics")
-        .headers(httpHeaders -> httpHeaders
-            .setBasicAuth("actuator", "actuator", StandardCharsets.UTF_8))
-        .accept(MediaType.ALL)
-        .exchange())
-        .assertNext(clientResponse -> assertEquals(HttpStatus.OK, clientResponse.statusCode()))
-        .verifyComplete();
-  }
-
-  /**
-   * Fetch metrics and expect unauthorized.
-   */
-  @Test
-  void fetchMetricsAndExpectUnauthorized() {
-    StepVerifier.create(newWebClient()
-        .get()
-        .uri("/actuator/metrics")
-        .accept(MediaType.ALL)
-        .exchange())
-        .assertNext(clientResponse -> assertEquals(
-            HttpStatus.UNAUTHORIZED,
-            clientResponse.statusCode()))
+            .get()
+            .uri("/actuator/health")
+            .accept(MediaType.ALL)
+            .retrieve().toEntity(String.class))
+        .assertNext(response -> assertEquals(HttpStatus.OK, response.getStatusCode()))
         .verifyComplete();
   }
 

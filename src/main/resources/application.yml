@@ -1,42 +1,30 @@
-bremersee:
-  exception-mapping:
-    api-paths:
-      - /*/api/**
-    default-exception-mapping-config:
-      include-stack-trace: true
-      include-cause: true
-      include-application-name: true
-      include-exception-class-name: true
-      include-handler: true
-      include-path: true
-  actuator:
-    auth:
-      enable: auto
-      enable-cors: true
-  cors:
-    enable: false
-  auth:
-    resource-server: none
-  redis:
-    embedded: true
-
 spring:
-  sleuth:
-    enabled: ${SLEUTH_ENABLED:false}
-    sampler:
-      probability: ${SLEUTH_PROBABILITY:1.0}
-  zipkin:
-    enabled: ${ZIPKIN_ENABLED:false}
-    base-url: ${ZIPKIN_BASE_URL:http://localhost:9411/}
   cloud:
-    loadbalancer:
-      ribbon:
-        enabled: false
     gateway:
-      discovery:
-        locator:
-          enabled: false
-          lower-case-service-id: true
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+              lower-case-service-id: true
+          route-refresh-listener:
+            enabled: true
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins:
+                  - "*"
+                allowed-methods:
+                  - "*"
+                allowed-headers:
+                  - "*"
+  security:
+    oauth2:
+      client:
+        provider:
+          swagger-ui:
+            authorization-uri: ${bremersee.keycloak.base-uri}/realms/${bremersee.keycloak.realm}/protocol/openid-connect/auth
+            token-uri: ${bremersee.keycloak.base-uri}/realms/${bremersee.keycloak.realm}/protocol/openid-connect/token
 
 eureka:
   client:
@@ -51,17 +39,13 @@ management:
         allowed-headers: "*"
         allowed-methods: "*"
         allowed-origins: "*"
-        allow-credentials: true
   endpoint:
     health:
       show-details: when_authorized
-  # Redis health check is broken: https://github.com/spring-projects/spring-boot/issues/22061 (will be fixed in 2.4.0)
-  health:
-    redis:
-      enabled: false
 
 server:
   port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
 
 logging:
   level:
@@ -70,25 +54,90 @@ logging:
     com.netflix.discovery.shared.resolver: warn
     org.springframework.cloud.configclient: warn
 
+bremersee:
+  exception-mapping:
+    api-paths:
+      - /*/api/**
+    default-exception-mapping-config:
+      include-stack-trace: true
+      include-cause: true
+      include-application-name: true
+      include-handler: true
+      include-path: true
+  web:
+    cors:
+      enabled: true
+  keycloak:
+    base-uri: https://openid.bremersee.org
+    realm: eixe
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+    oauth:
+      client-id: local-pkce
+      use-pkce-with-authorization-code-grant: true
+  open-api:
+    # see: https://github.com/OAI/OpenAPI-Specification/blob/3.1.1/versions/3.1.1.md#info-object
+    info:
+      version: 1.0.5-SNAPSHOT
+      title: Gateway API
+      summary: The gateway.
+      description: RESTful services of gateway.
+      # termsOfService: https://example.com/terms/
+      # contact:
+      #   name: API Support
+      #   url: https://www.example.com/support
+      #   email: support@example.com
+      license:
+        name: Apache 2.0
+        url: https://www.apache.org/licenses/LICENSE-2.0.html
+    # Generates default server (localhost)
+    # servers:
+    #  - url: https://apps.eixe.bremersee.org/groupman
+    #    description: Group Manager API
+
 ---
 
 spring:
-  profiles: in-memory
+  config:
+    activate:
+      on-profile: in-memory
 
 bremersee:
-  auth:
-    in-memory-users:
-      - name: "admin"
-        password: "admin"
-        authorities:
-          - "ROLE_USER"
-          - "ROLE_ADMIN"
-      - name: "actuator"
-        password: "actuator"
-        authorities:
-          - "ROLE_ACTUATOR"
-          - "ROLE_ACTUATOR_ADMIN"
-      - name: "user"
-        password: "user"
-        authorities:
-          - "ROLE_USER"
+  authentication:
+    in-memory:
+      enabled: true
+      users:
+        - name: ${USER_NAME:user}
+          password: ${USER_PASSWORD:changeit}
+          authorities:
+            - ROLE_USER
+        - name: ${ACTUATOR_USER_NAME:actuator}
+          password: ${ACTUATOR_USER_PASSWORD:changeit}
+          authorities:
+            - ROLE_ACTUATOR
+        - name: ${ADMIN_NAME:admin}
+          password: ${ADMIN_PASSWORD:changeit}
+          authorities:
+            - ROLE_ADMIN
+            - ROLE_ACTUATOR_ADMIN
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  security:
+    user:
+      name: testuser
+      password: changeit
+      roles:
+        - "USER"
+        - "LOCAL_USER"
+        - "ADMIN"
+        - "ACTUATOR_ADMIN"
