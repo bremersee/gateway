@@ -21,9 +21,6 @@ import io.swagger.v3.oas.annotations.security.OAuthFlow;
 import io.swagger.v3.oas.annotations.security.OAuthFlows;
 import io.swagger.v3.oas.annotations.security.OAuthScope;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.models.OpenAPI;
-import org.springdoc.core.properties.SwaggerUiConfigProperties;
-import org.springdoc.webflux.ui.SwaggerConfig;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -53,12 +50,5 @@ class OpenApiConfiguration {
   OpenApiConfiguration() {
     super();
   }
-
-  OpenAPI customOpenApi() {
-    return new OpenAPI()
-        ;
-  }
-
-  SwaggerUiConfigProperties p;
 
 }
