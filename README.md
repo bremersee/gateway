@@ -1,6 +1,6 @@
 # Bremersee's Spring Cloud Gateway
 
-[![codecov](https://codecov.io/gh/bremersee/gateway/branch/main/graph/badge.svg)](https://codecov.io/gh/bremersee/gateway)
+[![codecov](https://codecov.io/gh/bremersee/gateway/branch/develop/graph/badge.svg)](https://codecov.io/gh/bremersee/gateway)
 
 This gateway is more or less a plain Spring Cloud Gateway:
 
@@ -11,4 +11,4 @@ This gateway is more or less a plain Spring Cloud Gateway:
 </dependency>
 ```
 
-[Maven-Site](https://bremersee.github.io/gateway/1.0.5/index.html)
+[Maven-Site](https://bremersee.github.io/gateway/1.0.6-SNAPSHOT/index.html)

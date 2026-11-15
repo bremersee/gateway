@@ -82,7 +82,7 @@ springdoc:
   open-api:
     # see: https://github.com/OAI/OpenAPI-Specification/blob/3.1.1/versions/3.1.1.md#info-object
     info:
-      version: 1.0.5
+      version: 1.0.6-SNAPSHOT
       title: Gateway API
       summary: The gateway.
       description: RESTful services of gateway.

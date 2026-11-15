@@ -10,9 +10,9 @@ pipeline {
     PROFILES = 'eureka-client,ldap,ldap-auth'
     DOCKER_IMAGE = 'bremersee/gateway'
     DOCKER_HOSTS = 'app1 app2'
-    DOCKER_PUSH = true
-    DEPLOY_ON_APP_SERVER = true
-    SITE = true
+    DOCKER_PUSH = false
+    DEPLOY_ON_APP_SERVER = false
+    SITE = false
     CLEAN = true
   }
   tools {
