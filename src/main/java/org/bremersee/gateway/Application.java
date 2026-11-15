@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2020-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.bremersee.gateway;
 
-import org.bremersee.context.MessageSourceAutoConfiguration;
-import org.bremersee.converter.ModelMapperAutoConfiguration;
-import org.bremersee.web.reactive.BaseCommonConvertersAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -27,19 +24,22 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * @author Christian Bremer
  */
-@SpringBootApplication(exclude = {
-    BaseCommonConvertersAutoConfiguration.class,
-    ModelMapperAutoConfiguration.class,
-    MessageSourceAutoConfiguration.class
-})
+@SpringBootApplication
 public class Application {
+
+  /**
+   * Instantiates a new application.
+   */
+  public Application() {
+    super();
+  }
 
   /**
    * The entry point of application.
    *
    * @param args the input arguments
    */
-  public static void main(String[] args) {
+  static void main(String[] args) {
     SpringApplication.run(Application.class, args);
   }
 
