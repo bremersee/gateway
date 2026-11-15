@@ -65,18 +65,20 @@ class WebSecurityConfiguration {
    *
    * @param authenticationProperties the authentication properties
    * @param corsConfigurationSource the cors configuration source
+   * @param ldaptiveAuthenticationManager the ldaptive authentication manager
+   * @param userDetailsService the user details service
    */
   WebSecurityConfiguration(
       AuthenticationProperties authenticationProperties,
       CorsConfigurationSource corsConfigurationSource,
       ObjectProvider&lt;ReactiveLdaptiveAuthenticationManager&gt; ldaptiveAuthenticationManager,
-<span class="fc" id="L73">      ObjectProvider&lt;ReactiveUserDetailsService&gt; userDetailsService) {</span>
+<span class="fc" id="L75">      ObjectProvider&lt;ReactiveUserDetailsService&gt; userDetailsService) {</span>
 
-<span class="fc" id="L75">    this.authenticationProperties = authenticationProperties;</span>
-<span class="fc" id="L76">    this.corsConfigurationSource = corsConfigurationSource;</span>
-<span class="fc" id="L77">    this.ldaptiveAuthenticationManager = ldaptiveAuthenticationManager.getIfAvailable();</span>
-<span class="fc" id="L78">    this.userDetailsService = userDetailsService.getIfAvailable();</span>
-<span class="fc" id="L79">  }</span>
+<span class="fc" id="L77">    this.authenticationProperties = authenticationProperties;</span>
+<span class="fc" id="L78">    this.corsConfigurationSource = corsConfigurationSource;</span>
+<span class="fc" id="L79">    this.ldaptiveAuthenticationManager = ldaptiveAuthenticationManager.getIfAvailable();</span>
+<span class="fc" id="L80">    this.userDetailsService = userDetailsService.getIfAvailable();</span>
+<span class="fc" id="L81">  }</span>
 
   /**
    * Creates a security web filter chain.
@@ -86,27 +88,27 @@ class WebSecurityConfiguration {
    */
   @Bean
   SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
-<span class="fc" id="L89">    String[] actuatorReadRoles = authenticationProperties.getActuator().getReadRoles()</span>
-<span class="fc" id="L90">        .toArray(new String[0]);</span>
-<span class="fc" id="L91">    String[] actuatorWriteRoles = authenticationProperties.getActuator().getWriteRoles()</span>
+<span class="fc" id="L91">    String[] actuatorReadRoles = authenticationProperties.getActuator().getReadRoles()</span>
 <span class="fc" id="L92">        .toArray(new String[0]);</span>
-<span class="fc" id="L93">    http</span>
-<span class="fc" id="L94">        .authorizeExchange(authorize -&gt; authorize</span>
-<span class="fc" id="L95">            .pathMatchers(HttpMethod.OPTIONS, &quot;/**&quot;)</span>
-<span class="fc" id="L96">            .permitAll()</span>
+<span class="fc" id="L93">    String[] actuatorWriteRoles = authenticationProperties.getActuator().getWriteRoles()</span>
+<span class="fc" id="L94">        .toArray(new String[0]);</span>
+<span class="fc" id="L95">    http</span>
+<span class="fc" id="L96">        .authorizeExchange(authorize -&gt; authorize</span>
+<span class="fc" id="L97">            .pathMatchers(HttpMethod.OPTIONS, &quot;/**&quot;)</span>
+<span class="fc" id="L98">            .permitAll()</span>
 
-<span class="fc" id="L98">            .matchers(</span>
-<span class="fc" id="L99">                EndpointRequest.to(InfoEndpoint.class),</span>
-<span class="fc" id="L100">                EndpointRequest.to(HealthEndpoint.class))</span>
-<span class="fc" id="L101">            .permitAll()</span>
+<span class="fc" id="L100">            .matchers(</span>
+<span class="fc" id="L101">                EndpointRequest.to(InfoEndpoint.class),</span>
+<span class="fc" id="L102">                EndpointRequest.to(HealthEndpoint.class))</span>
+<span class="fc" id="L103">            .permitAll()</span>
 
-<span class="fc" id="L103">            .matchers(new AndServerWebExchangeMatcher(</span>
-<span class="fc" id="L104">                EndpointRequest.toAnyEndpoint(),</span>
+<span class="fc" id="L105">            .matchers(new AndServerWebExchangeMatcher(</span>
+<span class="fc" id="L106">                EndpointRequest.toAnyEndpoint(),</span>
                 new PathPatternParserServerWebExchangeMatcher(&quot;/**&quot;, HttpMethod.GET)))
-<span class="fc" id="L106">            .hasAnyAuthority(actuatorReadRoles)</span>
+<span class="fc" id="L108">            .hasAnyAuthority(actuatorReadRoles)</span>
 
-<span class="fc" id="L108">            .matchers(EndpointRequest.toAnyEndpoint())</span>
-<span class="fc" id="L109">            .hasAnyAuthority(actuatorWriteRoles)</span>
+<span class="fc" id="L110">            .matchers(EndpointRequest.toAnyEndpoint())</span>
+<span class="fc" id="L111">            .hasAnyAuthority(actuatorWriteRoles)</span>
 
             /*
             .pathMatchers(&quot;/v3/**&quot;).permitAll()
@@ -115,31 +117,31 @@ class WebSecurityConfiguration {
             .pathMatchers(&quot;/swagger-ui.html&quot;).permitAll()
             */
 
-<span class="fc" id="L118">            .anyExchange()</span>
-<span class="fc" id="L119">            .permitAll()</span>
+<span class="fc" id="L120">            .anyExchange()</span>
+<span class="fc" id="L121">            .permitAll()</span>
         )
 
-<span class="fc" id="L122">        .csrf(CsrfSpec::disable)</span>
+<span class="fc" id="L124">        .csrf(CsrfSpec::disable)</span>
 
-<span class="fc" id="L124">        .cors(customizer -&gt; customizer</span>
-<span class="fc" id="L125">            .configurationSource(corsConfigurationSource))</span>
+<span class="fc" id="L126">        .cors(customizer -&gt; customizer</span>
+<span class="fc" id="L127">            .configurationSource(corsConfigurationSource))</span>
 
-<span class="fc" id="L127">        .headers(headerSpec -&gt; headerSpec</span>
-<span class="fc" id="L128">            .frameOptions(fos -&gt; fos.mode(Mode.SAMEORIGIN)))</span>
+<span class="fc" id="L129">        .headers(headerSpec -&gt; headerSpec</span>
+<span class="fc" id="L130">            .frameOptions(fos -&gt; fos.mode(Mode.SAMEORIGIN)))</span>
 
-<span class="fc" id="L130">        .formLogin(FormLoginSpec::disable);</span>
+<span class="fc" id="L132">        .formLogin(FormLoginSpec::disable);</span>
 
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">    if (!isEmpty(ldaptiveAuthenticationManager)) {</span>
-<span class="nc" id="L133">      http.httpBasic(customizer -&gt; customizer</span>
-<span class="nc" id="L134">          .authenticationManager(ldaptiveAuthenticationManager));</span>
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">    } else if (!isEmpty(userDetailsService)) {</span>
-<span class="fc" id="L136">      var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">    if (!isEmpty(ldaptiveAuthenticationManager)) {</span>
+<span class="nc" id="L135">      http.httpBasic(customizer -&gt; customizer</span>
+<span class="nc" id="L136">          .authenticationManager(ldaptiveAuthenticationManager));</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">    } else if (!isEmpty(userDetailsService)) {</span>
+<span class="fc" id="L138">      var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(</span>
           userDetailsService);
-<span class="fc" id="L138">      http.httpBasic(customizer -&gt; customizer</span>
-<span class="fc" id="L139">          .authenticationManager(authenticationManager));</span>
+<span class="fc" id="L140">      http.httpBasic(customizer -&gt; customizer</span>
+<span class="fc" id="L141">          .authenticationManager(authenticationManager));</span>
     }
 
-<span class="fc" id="L142">    return http.build();</span>
+<span class="fc" id="L144">    return http.build();</span>
   }
 
 }
