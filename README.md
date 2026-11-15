@@ -1,5 +1,7 @@
 # Bremersee's Spring Cloud Gateway
 
+[![codecov](https://codecov.io/gh/bremersee/gateway/branch/develop/graph/badge.svg)](https://codecov.io/gh/bremersee/gateway)
+
 This gateway is more or less a plain Spring Cloud Gateway:
 
 ```xml

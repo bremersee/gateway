@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.bremersee</groupId>
 		<artifactId>common-service-parent</artifactId>
-		<version>6.1.6</version>
+		<version>6.1.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -100,7 +100,7 @@
 		</snapshotRepository>
 		<site>
 			<id>bremersee-sites</id>
-			<url>https://webdav.eixe.bremersee.org/maven-sites/gateway/${project.version}</url>
+			<url>https://bremersee.github.io/gateway/${project.version}</url>
 		</site>
 	</distributionManagement>
 
@@ -185,21 +185,6 @@
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
 		</dependency>
-
-		<!-- Sleuth and Zipkin
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-sleuth</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-sleuth-zipkin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-zipkin</artifactId>
-		</dependency>
-		 -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

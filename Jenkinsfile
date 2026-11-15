@@ -4,13 +4,14 @@ pipeline {
   }
   environment {
     CODECOV_TOKEN = credentials('gateway-codecov-token')
+    BRANCH_NAME = "${GIT_BRANCH.split("/").size() > 1 ? GIT_BRANCH.split("/")[1] : GIT_BRANCH}"
     NAME = 'gateway'
     NON_SECURE_PORT = 10110
     PROFILES = 'eureka-client,ldap,ldap-auth'
     DOCKER_IMAGE = 'bremersee/gateway'
     DOCKER_HOSTS = 'app1 app2'
-    DOCKER_PUSH = false
-    DEPLOY_ON_APP_SERVER = false
+    DOCKER_PUSH = true
+    DEPLOY_ON_APP_SERVER = true
     SITE = true
     CLEAN = true
   }
@@ -58,6 +59,7 @@ pipeline {
         sh '''
           mvn -B -P build-system,gh-pages-site site site:stage
           git clone -b gh-pages git@github.com:bremersee/$NAME.git target/gh-pages
+          rm -rf target/*-SNAPSHOT
           cp -rf target/staging/* target/gh-pages
           git -C target/gh-pages add .
           git -C target/gh-pages commit -m "Maven site"
@@ -168,7 +170,7 @@ pipeline {
                 -e CONFIG_URI='https://config.eixe.bremersee.org' \
                 -e CONFIG_USER=$CONFIG_USER \
                 -e CONFIG_PASSWORD=$CONFIG_SECRET \
-                -e CONFIG_LABEL='develop' \
+                -e CONFIG_LABEL=$BRANCH_NAME \
                 -e SERVER_PORT=$NON_SECURE_PORT \
                 -p $NON_SECURE_PORT:$NON_SECURE_PORT \
                 $DOCKER_IMAGE:\$TAG
